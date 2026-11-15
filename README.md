@@ -347,71 +347,87 @@ pip install -r requirements.txt
 Create a `.env` file in the project root:
 
 ```env
-ADZUNA_APP_ID=your_adzuna_app_id
-ADZUNA_APP_KEY=your_adzuna_app_key
+ADZUNA_APP_ID="2d7164f6"
+ADZUNA_APP_KEY="662b732b9f9e8a682b15059d91b81613"
 ```
-
-Do **not** upload your `.env` file or API keys to GitHub.
-
 The project already uses environment variables for API credentials.
 
 ---
 
 ## ▶️ Run the Application
 
-Start the Flask application:
+Vercel : ## 🚀 Live Demo
 
-```bash
-python app.py
-```
+🔗 **Live Application:** https://ai-resume-scanner-and-job-prediction-system-3xmzp9tjo.vercel.app
 
-Then open:
+The AI Resume Scanner and Job Prediction System is deployed on Vercel and available online for testing.
 
-```text
-http://127.0.0.1:5000
-```
-
----
 
 ## 🔄 Application Workflow
+## Application Workflow
 
 ```text
-                ┌──────────────────┐
-                │   Upload Resume  │
-                └────────┬─────────┘
-                         ↓
-                ┌──────────────────┐
-                │ Resume Parsing   │
-                └────────┬─────────┘
-                         ↓
-                ┌──────────────────┐
-                │ Skill Extraction │
-                └────────┬─────────┘
-                         ↓
-                ┌──────────────────┐
-                │ ATS Analysis     │
-                └────────┬─────────┘
-                         ↓
-                ┌──────────────────┐
-                │ Role Prediction  │
-                └────────┬─────────┘
-                         ↓
-              ┌──────────────────────┐
-              │ Adzuna API Search    │
-              └──────────┬───────────┘
-                         ↓
-             ┌────────────────────────┐
-             │ Jobs + Internships     │
-             └───────────┬────────────┘
-                         ↓
-             ┌────────────────────────┐
-             │ Resume ↔ Job Matching  │
-             └───────────┬────────────┘
-                         ↓
-             ┌────────────────────────┐
-             │ Recommended Jobs       │
-             │ & Internships          │
-             └────────────────────────┘
+┌──────────────────────────────┐
+│       📄 Upload Resume       │
+└──────────────┬───────────────┘
+               │
+               ▼
+┌──────────────────────────────┐
+│      🔍 Resume Parsing       │
+└──────────────┬───────────────┘
+               │
+               ▼
+┌──────────────────────────────┐
+│      🧠 Skill Extraction     │
+└──────────────┬───────────────┘
+               │
+               ▼
+┌──────────────────────────────┐
+│        📊 ATS Analysis       │
+└──────────────┬───────────────┘
+               │
+               ▼
+┌──────────────────────────────┐
+│      🤖 ML Role Prediction   │
+└──────────────┬───────────────┘
+               │
+               ▼
+┌──────────────────────────────┐
+│      🌐 Adzuna API Search    │
+└──────────────┬───────────────┘
+               │
+               ▼
+       ┌───────┴────────┐
+       │                │
+       ▼                ▼
+┌───────────────┐  ┌──────────────────┐
+│ 💼 Live Jobs  │  │ 🎓 Internships   │
+└───────┬───────┘  └────────┬─────────┘
+        │                   │
+        ▼                   ▼
+┌───────────────┐  ┌────────────────────┐
+│ Resume ↔ Job  │  │ Resume ↔ Internship│
+│    Matching   │  │      Matching      │
+└───────┬───────┘  └──────────┬─────────┘
+        │                     │
+        ▼                     ▼
+┌───────────────┐  ┌────────────────────┐
+│ Recommended   │  │ Recommended        │
+│     Jobs      │  │   Internships      │
+└───────┬───────┘  └──────────┬─────────┘
+        │                     │
+        └──────────┬──────────┘
+                   ▼
+        ┌────────────────────────┐
+        │ 📈 Match Score &       │
+        │    Analysis Results    │
+        └───────────┬────────────┘
+                    │
+                    ▼
+        ┌────────────────────────┐
+        │ 🤖 Milo Career         │
+        │       Assistant        │
+        └────────────────────────┘
 ```
 
 ---
@@ -512,6 +528,8 @@ https://github.com/lithik-raj
 Project Repository:
 https://github.com/lithik-raj/AI-Resume-Scanner-and-Job-Prediction-System
 
+Vercel :
+ai-resume-scanner-and-job-prediction-system-prqmoti12.vercel.app
 ---
 
 ## 📄 License
