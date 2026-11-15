@@ -20,6 +20,15 @@ from utils.portfolio_analyzer import analyze_portfolio
 
 from chatbot import generate_milo_response
 
+from utils.text_cleaner import clean_text
+from utils.jd_extractor import extract_criteria, JDExtractionError
+from utils.resume_analyzer import (
+    analyze_resume_against_criterion,
+    batch_analyze_resume_against_criteria,
+    ResumeAnalysisError,
+)
+from utils.scorer import calculate_overall_score, ScoringError
+
 
 app = Flask(__name__)
 
@@ -116,6 +125,11 @@ def predict():
 
         opportunity_type = "job"
 
+    job_description = request.form.get(
+        "job_description",
+        ""
+    ).strip()
+
 
     # =====================================================
     # SAVE RESUME TO TEMPORARY VERCEL STORAGE
@@ -190,6 +204,47 @@ def predict():
     skills = extract_skills(
         text
     )
+
+
+    # =====================================================
+    # TARGET JOB DESCRIPTION FIT SCORING (NO REPEATED STEPS)
+    # =====================================================
+
+    fit_result = None
+
+    if job_description and len(job_description) >= 50:
+
+        try:
+
+            cleaned_resume = clean_text(
+                text
+            )
+
+            cleaned_jd = clean_text(
+                job_description
+            )
+
+            criteria_response = extract_criteria(
+                cleaned_jd
+            )
+
+            analysis_results = batch_analyze_resume_against_criteria(
+                resume_text=cleaned_resume,
+                criteria=criteria_response.criteria
+            )
+
+            fit_result = calculate_overall_score(
+                analysis_results
+            )
+
+        except Exception as error:
+
+            print(
+                "Job description fit scoring error:",
+                error
+            )
+
+            fit_result = None
 
 
     # =====================================================
@@ -671,7 +726,13 @@ def predict():
 
         portfolio_evidence=portfolio_evidence,
 
-        external_evidence=external_evidence
+        external_evidence=external_evidence,
+
+        fit_result=fit_result,
+
+        job_description=job_description,
+
+        resume_text=text
 
     )
 
@@ -852,6 +913,217 @@ def milo():
 
         "opportunity_type": opportunity_type
 
+    }
+
+
+# =========================================================
+# JOB FIT SCORER ROUTES (INTEGRATED & NON-REPEATING)
+# =========================================================
+
+@app.route("/fit-scorer")
+@app.route("/scorer")
+def fit_scorer_page():
+    return render_template("fit_scorer.html")
+
+
+@app.route("/results")
+def results_page():
+    return render_template("results.html")
+
+
+@app.route("/health")
+def health_check():
+    return {
+        "status": "success",
+        "message": "AI Resume Scanner & Job Recommendation System is running",
+    }
+
+
+@app.route("/validate-jd", methods=["POST"])
+def validate_job_description():
+    data = request.get_json(silent=True) or request.form
+    job_description = data.get("job_description", "")
+    if not job_description or not job_description.strip():
+        return {
+            "status": "error",
+            "message": "Job description cannot be empty.",
+        }, 400
+
+    return {
+        "status": "valid",
+        "message": "Job description received successfully.",
+        "character_count": len(job_description),
+    }
+
+
+@app.route("/extract-criteria", methods=["POST"])
+def extract_job_criteria():
+    data = request.get_json(silent=True) or request.form
+    job_description = data.get("job_description", "")
+    if not job_description or not job_description.strip():
+        return {
+            "status": "error",
+            "message": "Job description cannot be empty.",
+        }, 400
+
+    try:
+        cleaned_jd = clean_text(job_description)
+        criteria_response = extract_criteria(cleaned_jd)
+        return {
+            "status": "success",
+            "criteria": [
+                {
+                    "name": criterion.name,
+                    "category": criterion.category,
+                    "weight": criterion.weight,
+                }
+                for criterion in criteria_response.criteria
+            ],
+        }
+    except Exception as exc:
+        return {
+            "status": "error",
+            "message": str(exc),
+        }, 500
+
+
+@app.route("/analyze", methods=["POST"])
+def analyze_resume():
+    """
+    Unified Resume -> Job Description Fit Analysis.
+    Optimized to eliminate repeated parsing, redundant LLM calls, and duplicated steps.
+    Accepts:
+      - job_description (form or json)
+      - resume (PDF or TXT file upload) OR resume_text (raw text string)
+    """
+    job_description = request.form.get("job_description", "")
+    resume_text = request.form.get("resume_text", "")
+    filename = "Resume"
+
+    json_data = request.get_json(silent=True)
+    if json_data:
+        job_description = json_data.get("job_description", job_description)
+        resume_text = json_data.get("resume_text", resume_text)
+
+    if not job_description or not job_description.strip():
+        return {
+            "status": "error",
+            "detail": "Job description cannot be empty.",
+            "message": "Job description cannot be empty.",
+        }, 400
+
+    if len(job_description.strip()) < 50:
+        return {
+            "status": "error",
+            "detail": "Job description must contain at least 50 characters.",
+            "message": "Job description must contain at least 50 characters.",
+        }, 400
+
+    temporary_file_path = None
+
+    # Step 1: Text extraction - only done ONCE, reused if already provided
+    if not resume_text:
+        if "resume" not in request.files:
+            return {
+                "status": "error",
+                "detail": "Please upload a resume file or provide resume text.",
+                "message": "Please upload a resume file or provide resume text.",
+            }, 400
+
+        resume = request.files["resume"]
+        if not resume or resume.filename == "":
+            return {
+                "status": "error",
+                "detail": "Please select a resume file to upload.",
+                "message": "Please select a resume file to upload.",
+            }, 400
+
+        filename = os.path.basename(resume.filename)
+        extension = os.path.splitext(filename)[1].lower()
+
+        if extension not in [".pdf", ".txt"]:
+            return {
+                "status": "error",
+                "detail": "Unsupported resume format. Please upload a PDF or TXT file.",
+                "message": "Unsupported resume format. Please upload a PDF or TXT file.",
+            }, 400
+
+        try:
+            with tempfile.NamedTemporaryFile(delete=False, suffix=extension) as temp_f:
+                resume.save(temp_f.name)
+                temporary_file_path = temp_f.name
+
+            resume_text = extract_text(temporary_file_path)
+        except Exception as exc:
+            return {
+                "status": "error",
+                "detail": f"Resume parsing failed: {exc}",
+                "message": f"Resume parsing failed: {exc}",
+            }, 422
+        finally:
+            if temporary_file_path and os.path.exists(temporary_file_path):
+                try:
+                    os.remove(temporary_file_path)
+                except Exception:
+                    pass
+
+    if not resume_text or not resume_text.strip():
+        return {
+            "status": "error",
+            "detail": "Unable to extract readable text from this resume.",
+            "message": "Unable to extract readable text from this resume.",
+        }, 422
+
+    # Step 2: Clean text (once)
+    try:
+        cleaned_resume = clean_text(resume_text)
+        cleaned_jd = clean_text(job_description)
+    except Exception as exc:
+        return {
+            "status": "error",
+            "detail": f"Text cleaning failed: {exc}",
+            "message": f"Text cleaning failed: {exc}",
+        }, 422
+
+    # Step 3: Extract criteria from job description
+    try:
+        criteria_response = extract_criteria(cleaned_jd)
+    except Exception as exc:
+        return {
+            "status": "error",
+            "detail": f"Criteria extraction failed: {exc}",
+            "message": f"Criteria extraction failed: {exc}",
+        }, 502
+
+    # Step 4: Batch evaluate criteria against resume in ONE pass with caching
+    try:
+        analysis_results = batch_analyze_resume_against_criteria(
+            resume_text=cleaned_resume,
+            criteria=criteria_response.criteria,
+        )
+    except Exception as exc:
+        return {
+            "status": "error",
+            "detail": f"Resume analysis failed: {exc}",
+            "message": f"Resume analysis failed: {exc}",
+        }, 502
+
+    # Step 5: Calculate overall weighted fit score
+    try:
+        final_result = calculate_overall_score(analysis_results)
+    except Exception as exc:
+        return {
+            "status": "error",
+            "detail": f"Score calculation failed: {exc}",
+            "message": f"Score calculation failed: {exc}",
+        }, 500
+
+    return {
+        "status": "success",
+        "filename": filename,
+        "overall_score": final_result["overall_score"],
+        "criteria": final_result["criteria"],
+        "message": final_result["message"],
     }
 
 

@@ -416,6 +416,63 @@ http://127.0.0.1:5000
 
 ---
 
+## 🎯 Integrated Resume → Job Description Fit Scorer
+
+The repository integrates the **Resume Fit Scorer** directly into the AI Resume Scanner, providing a unified architecture with **zero repeated analysis steps**:
+
+### Highlights
+
+* **Single-Pass Parsing**: Uploaded PDF or TXT resumes are parsed and cleaned once, eliminating duplicate parsing loops across ATS screening, ML classification, and job description evaluation.
+* **Batch Criterion Evaluation**: Analyzes all criteria (Technical Skills, Experience, Education, Projects, Soft Skills) in a unified single pass with in-memory memoization to avoid redundant sequential LLM calls.
+* **Transparent 0–100 Scoring**: Configuration-driven weights configured via `config/scoring.yaml`.
+* **Interactive Live Fit Scoring**: Run detailed fit scoring on any live Adzuna-recommended job directly from the results dashboard without re-uploading or re-parsing.
+* **Dedicated Fit Scorer Interface**: Accessible at `/fit-scorer` with full results breakdown at `/results`.
+
+### Scoring Weights (`config/scoring.yaml`)
+
+```yaml
+scoring:
+  technical_skills: 50
+  experience: 20
+  education: 10
+  projects: 10
+  soft_skills: 10
+```
+
+### Calibration & Testing
+
+Run scoring calibration:
+
+```powershell
+python evaluate_calibration.py
+```
+
+Run test suite:
+
+```powershell
+pytest tests
+```
+
+---
+
+## ☁️ Vercel Deployment
+
+Deployable as a unified service under the project name:
+
+```text
+ai-resume-scanner-and-job-recommendation-system
+```
+
+Configured via `vercel.json` and `api/index.py` for read-only serverless execution with `/tmp` temporary storage.
+
+Required Environment Variables on Vercel:
+
+* `ADZUNA_APP_ID`: Your Adzuna App ID
+* `ADZUNA_APP_KEY`: Your Adzuna App Key
+* `OPENROUTER_API_KEY`: (Optional) OpenRouter key for LLM-driven criteria and evidence extraction
+
+---
+
 ## 📌 Important Notes
 
 * Resume-job matching is an automated compatibility estimate.

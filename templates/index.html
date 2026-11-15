@@ -858,10 +858,16 @@
           </span>
         </div>
 
-        <div class="system-status">
-          <span class="status-light"></span>
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <a href="{{ url_for('fit_scorer_page') }}" style="color: #c4b5fd; text-decoration: none; font-size: 13px; font-weight: 600; padding: 6px 14px; border-radius: 8px; border: 1px solid rgba(124, 58, 237, 0.45); background: rgba(124, 58, 237, 0.14); transition: 0.25s;">
+            🎯 Job Fit Scorer
+          </a>
 
-          AI ENGINE ONLINE
+          <div class="system-status">
+            <span class="status-light"></span>
+
+            AI ENGINE ONLINE
+          </div>
         </div>
       </header>
 
@@ -887,11 +893,19 @@
             explore opportunities designed around your profile.
           </p>
 
-          <a href="{{ url_for('upload') }}" class="start-link">
-            <button type="button" class="start-btn">
-              Analyze My Resume &nbsp; →
-            </button>
-          </a>
+          <div style="display: flex; gap: 14px; flex-wrap: wrap; align-items: center;">
+            <a href="{{ url_for('upload') }}" class="start-link">
+              <button type="button" class="start-btn">
+                Analyze My Resume &nbsp; →
+              </button>
+            </a>
+
+            <a href="{{ url_for('fit_scorer_page') }}" style="text-decoration: none;">
+              <button type="button" class="start-btn" style="background: rgba(124, 58, 237, 0.16); border: 1px solid #7c3aed; color: #c4b5fd; box-shadow: 0 0 18px rgba(124, 58, 237, 0.25);">
+                Job Fit Scorer &nbsp; 🎯
+              </button>
+            </a>
+          </div>
         </div>
 
         <!-- HERO VISUAL -->

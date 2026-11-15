@@ -391,13 +391,31 @@
               </div>
             </div>
 
-            <label for="resume"> Upload your resume </label>
+            <!-- =================================================
+                 TARGET JOB DESCRIPTION (OPTIONAL FOR FIT SCORING)
+                 ================================================= -->
+
+            <div class="opportunity-selection" style="margin-top: 15px;">
+              <span class="opportunity-title" style="display: flex; justify-content: space-between; align-items: center;">
+                <span>🎯 Target Job Description <small style="color: #8794a8; font-weight: normal;">(Optional - for 0–100 Fit Score)</small></span>
+                <a href="{{ url_for('fit_scorer_page') }}" style="color: #00e5ff; font-size: 12px; text-decoration: none;">Dedicated Fit Scorer →</a>
+              </span>
+
+              <textarea
+                name="job_description"
+                id="targetJobDescription"
+                placeholder="Paste a target job description here to calculate a transparent 0–100 Fit Score with criterion breakdown, or leave blank for general career matching..."
+                style="width: 100%; min-height: 80px; max-height: 160px; padding: 12px; background: #07101f; border: 1px solid #19364a; border-radius: 8px; color: #ffffff; font-family: inherit; font-size: 13px; resize: vertical; margin-top: 6px; box-sizing: border-box;"
+              ></textarea>
+            </div>
+
+            <label for="resume"> Upload your resume (PDF or TXT) </label>
 
             <input
               type="file"
               id="resume"
               name="resume"
-              accept=".pdf"
+              accept=".pdf,.txt"
               required
             />
 
