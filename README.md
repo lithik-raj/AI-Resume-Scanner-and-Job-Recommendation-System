@@ -1,8 +1,8 @@
-# 🤖 AI Resume Scanner and Job Prediction System
+# 🤖 AI Resume Scanner and Job Recommendation System
 
-An AI-powered web application that analyzes resumes, evaluates their suitability for a job description, extracts technical skills, calculates ATS-style scores, and recommends relevant **jobs and internships** using live job data from the Adzuna API.
+An AI-powered web application that analyzes resumes, evaluates their suitability for a job description with a transparent 0–100 fit score, extracts technical skills, calculates ATS-style scores, and recommends relevant **jobs and internships** using live job data from the Adzuna API.
 
-The system combines **Machine Learning, NLP-based resume analysis, skill matching, job recommendation, and AI assistance** into a single web application.
+The system combines **Machine Learning, NLP-based resume analysis, configuration-driven Job Description Fit Scoring, skill matching, live opportunity recommendation, and AI assistance** into a unified web application.
 
 ---
 
@@ -354,17 +354,15 @@ The project already uses environment variables for API credentials.
 
 ---
 
-## ▶️ Run the Application
+## 🚀 Live Demo & Deployment
 
-Vercel : ## 🚀 Live Demo
+🔗 **Live Application:** [https://ai-resume-scanner-and-job-recommendation-system.vercel.app](https://ai-resume-scanner-and-job-recommendation-system.vercel.app)
 
-🔗 **Live Application:** https://ai-resume-scanner-and-job-prediction-system-3xmzp9tjo.vercel.app
+The **AI Resume Scanner and Job Recommendation System** is built for serverless deployment on Vercel with zero repeated analysis passes.
 
-The AI Resume Scanner and Job Prediction System is deployed on Vercel and available online for testing.
-
+---
 
 ## 🔄 Application Workflow
-## Application Workflow
 
 ```text
 ┌──────────────────────────────┐
@@ -526,10 +524,10 @@ GitHub:
 https://github.com/lithik-raj
 
 Project Repository:
-https://github.com/lithik-raj/AI-Resume-Scanner-and-Job-Prediction-System
+https://github.com/lithik-raj/AI-Resume-Scanner-and-Job-Recommendation-System
 
-Vercel :
-ai-resume-scanner-and-job-prediction-system-prqmoti12.vercel.app
+Live Application on Vercel:
+https://ai-resume-scanner-and-job-recommendation-system.vercel.app
 ---
 
 ## 📄 License
