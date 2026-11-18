@@ -29,6 +29,7 @@ class VercelPathMiddleware:
         if x_matched and not x_matched.startswith("/api") and environ.get("PATH_INFO") == "/":
             environ["PATH_INFO"] = x_matched
 
+        environ["SCRIPT_NAME"] = ""
         return self.wsgi_app(environ, start_response)
 
 

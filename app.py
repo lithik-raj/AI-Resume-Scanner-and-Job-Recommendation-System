@@ -110,9 +110,9 @@ vectorizer = joblib.load(
 # HOME PAGE
 # =========================================================
 
-@app.route("/")
-@app.route("/api")
 @app.route("/api/index")
+@app.route("/api")
+@app.route("/")
 def home():
 
     return render_template(
@@ -124,9 +124,9 @@ def home():
 # UPLOAD PAGE
 # =========================================================
 
-@app.route("/upload")
-@app.route("/api/upload")
 @app.route("/api/index/upload")
+@app.route("/api/upload")
+@app.route("/upload")
 def upload():
 
     return render_template(
@@ -139,7 +139,7 @@ def upload():
 # =========================================================
 
 @app.route(
-    "/predict",
+    "/api/index/predict",
     methods=["POST"]
 )
 @app.route(
@@ -147,7 +147,7 @@ def upload():
     methods=["POST"]
 )
 @app.route(
-    "/api/index/predict",
+    "/predict",
     methods=["POST"]
 )
 def predict():
@@ -969,24 +969,24 @@ def milo():
 # JOB FIT SCORER ROUTES (INTEGRATED & NON-REPEATING)
 # =========================================================
 
-@app.route("/fit-scorer")
-@app.route("/scorer")
-@app.route("/api/fit-scorer")
 @app.route("/api/index/fit-scorer")
+@app.route("/api/fit-scorer")
+@app.route("/scorer")
+@app.route("/fit-scorer")
 def fit_scorer_page():
     return render_template("fit_scorer.html")
 
 
-@app.route("/results")
-@app.route("/api/results")
 @app.route("/api/index/results")
+@app.route("/api/results")
+@app.route("/results")
 def results_page():
     return render_template("results.html")
 
 
-@app.route("/health")
-@app.route("/api/health")
 @app.route("/api/index/health")
+@app.route("/api/health")
+@app.route("/health")
 def health_check():
     return {
         "status": "success",
@@ -994,20 +994,9 @@ def health_check():
     }
 
 
-@app.route("/debug-env")
-def debug_env():
-    import json
-    env_dump = {
-        k: str(v)
-        for k, v in request.environ.items()
-        if k.startswith("HTTP_") or k in ("PATH_INFO", "REQUEST_URI", "RAW_URI", "SCRIPT_NAME")
-    }
-    return json.dumps(env_dump, indent=2)
-
-
-@app.route("/validate-jd", methods=["POST"])
-@app.route("/api/validate-jd", methods=["POST"])
 @app.route("/api/index/validate-jd", methods=["POST"])
+@app.route("/api/validate-jd", methods=["POST"])
+@app.route("/validate-jd", methods=["POST"])
 def validate_job_description():
     data = request.get_json(silent=True) or request.form
     job_description = data.get("job_description", "")
@@ -1024,9 +1013,9 @@ def validate_job_description():
     }
 
 
-@app.route("/extract-criteria", methods=["POST"])
-@app.route("/api/extract-criteria", methods=["POST"])
 @app.route("/api/index/extract-criteria", methods=["POST"])
+@app.route("/api/extract-criteria", methods=["POST"])
+@app.route("/extract-criteria", methods=["POST"])
 def extract_job_criteria():
     data = request.get_json(silent=True) or request.form
     job_description = data.get("job_description", "")
@@ -1057,9 +1046,9 @@ def extract_job_criteria():
         }, 500
 
 
-@app.route("/analyze", methods=["POST"])
-@app.route("/api/analyze", methods=["POST"])
 @app.route("/api/index/analyze", methods=["POST"])
+@app.route("/api/analyze", methods=["POST"])
+@app.route("/analyze", methods=["POST"])
 def analyze_resume():
     """
     Unified Resume -> Job Description Fit Analysis.
