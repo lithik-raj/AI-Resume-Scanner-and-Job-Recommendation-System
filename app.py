@@ -994,6 +994,17 @@ def health_check():
     }
 
 
+@app.route("/debug-env")
+def debug_env():
+    import json
+    env_dump = {
+        k: str(v)
+        for k, v in request.environ.items()
+        if k.startswith("HTTP_") or k in ("PATH_INFO", "REQUEST_URI", "RAW_URI", "SCRIPT_NAME")
+    }
+    return json.dumps(env_dump, indent=2)
+
+
 @app.route("/validate-jd", methods=["POST"])
 @app.route("/api/validate-jd", methods=["POST"])
 @app.route("/api/index/validate-jd", methods=["POST"])
