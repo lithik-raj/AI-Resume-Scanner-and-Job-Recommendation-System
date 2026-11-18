@@ -7,7 +7,7 @@ import json
 import tempfile
 import joblib
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, send_from_directory
 
 from utils.resume_parser import extract_text
 from utils.skill_extractor import extract_skills
@@ -30,7 +30,48 @@ from utils.resume_analyzer import (
 from utils.scorer import calculate_overall_score, ScoringError
 
 
-app = Flask(__name__)
+BASE_DIR = os.path.dirname(
+    os.path.abspath(__file__)
+)
+
+app = Flask(
+    __name__,
+    static_folder=os.path.join(BASE_DIR, "static"),
+    static_url_path="/static",
+)
+
+
+# =========================================================
+# STATIC ASSETS FALLBACK ROUTES (VERCEL & LOCAL)
+# =========================================================
+
+@app.route("/static/<path:filename>")
+def serve_static(filename):
+    return send_from_directory(os.path.join(BASE_DIR, "static"), filename)
+
+
+@app.route("/images/<path:filename>")
+def serve_images(filename):
+    return send_from_directory(os.path.join(BASE_DIR, "static", "images"), filename)
+
+
+@app.route("/css/<path:filename>")
+def serve_css(filename):
+    return send_from_directory(os.path.join(BASE_DIR, "static", "css"), filename)
+
+
+@app.route("/js/<path:filename>")
+def serve_js(filename):
+    return send_from_directory(os.path.join(BASE_DIR, "static", "js"), filename)
+
+
+@app.route("/favicon.ico")
+def favicon():
+    return send_from_directory(
+        os.path.join(BASE_DIR, "static", "images"),
+        "logo.png",
+        mimetype="image/png",
+    )
 
 
 # =========================================================
@@ -47,10 +88,6 @@ app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 # =========================================================
 # LOAD ML MODEL
 # =========================================================
-
-BASE_DIR = os.path.dirname(
-    os.path.abspath(__file__)
-)
 
 model = joblib.load(
     os.path.join(

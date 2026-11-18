@@ -8,5 +8,6 @@ if BASE_DIR not in sys.path:
 
 from app import app
 
-# Vercel entrypoint
+# Vercel entrypoint (supports both app and handler conventions)
 app = app
+handler = app

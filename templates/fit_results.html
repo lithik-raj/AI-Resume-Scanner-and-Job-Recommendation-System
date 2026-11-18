@@ -6,7 +6,7 @@
 
     <title>Resume Fit Results</title>
 
-    <link rel="stylesheet" href="/static/style.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/fit_scorer.css') }}" />
   </head>
 
   <body>
@@ -82,6 +82,6 @@
       </section>
     </main>
 
-    <script src="/static/script.js"></script>
+    <script src="{{ url_for('static', filename='js/fit_scorer.js') }}"></script>
   </body>
 </html>
