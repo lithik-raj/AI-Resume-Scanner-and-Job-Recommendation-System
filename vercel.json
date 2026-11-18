@@ -3,6 +3,10 @@
   "name": "ai-resume-scanner-and-job-recommendation-system",
   "rewrites": [
     {
+      "source": "/",
+      "destination": "/api/index"
+    },
+    {
       "source": "/(.*)",
       "destination": "/api/index/$1"
     }
