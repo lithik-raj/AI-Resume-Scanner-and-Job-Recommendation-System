@@ -356,7 +356,7 @@ The project already uses environment variables for API credentials.
 
 ## 🚀 Live Demo & Deployment
 
-🔗 **Live Application:** [https://ai-resume-scanner-and-job-recommendation-system.vercel.app](https://ai-resume-scanner-and-job-recommendation-system.vercel.app)
+🔗 **Live Application:** ai-resume-scanner-and-job-predictio.vercel.app
 
 The **AI Resume Scanner and Job Recommendation System** is built for serverless deployment on Vercel with zero repeated analysis passes.
 
