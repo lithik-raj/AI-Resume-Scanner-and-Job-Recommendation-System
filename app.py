@@ -111,6 +111,8 @@ vectorizer = joblib.load(
 # =========================================================
 
 @app.route("/")
+@app.route("/api")
+@app.route("/api/index")
 def home():
 
     return render_template(
@@ -123,6 +125,8 @@ def home():
 # =========================================================
 
 @app.route("/upload")
+@app.route("/api/upload")
+@app.route("/api/index/upload")
 def upload():
 
     return render_template(
@@ -136,6 +140,14 @@ def upload():
 
 @app.route(
     "/predict",
+    methods=["POST"]
+)
+@app.route(
+    "/api/predict",
+    methods=["POST"]
+)
+@app.route(
+    "/api/index/predict",
     methods=["POST"]
 )
 def predict():
@@ -959,16 +971,22 @@ def milo():
 
 @app.route("/fit-scorer")
 @app.route("/scorer")
+@app.route("/api/fit-scorer")
+@app.route("/api/index/fit-scorer")
 def fit_scorer_page():
     return render_template("fit_scorer.html")
 
 
 @app.route("/results")
+@app.route("/api/results")
+@app.route("/api/index/results")
 def results_page():
     return render_template("results.html")
 
 
 @app.route("/health")
+@app.route("/api/health")
+@app.route("/api/index/health")
 def health_check():
     return {
         "status": "success",
@@ -977,6 +995,8 @@ def health_check():
 
 
 @app.route("/validate-jd", methods=["POST"])
+@app.route("/api/validate-jd", methods=["POST"])
+@app.route("/api/index/validate-jd", methods=["POST"])
 def validate_job_description():
     data = request.get_json(silent=True) or request.form
     job_description = data.get("job_description", "")
@@ -994,6 +1014,8 @@ def validate_job_description():
 
 
 @app.route("/extract-criteria", methods=["POST"])
+@app.route("/api/extract-criteria", methods=["POST"])
+@app.route("/api/index/extract-criteria", methods=["POST"])
 def extract_job_criteria():
     data = request.get_json(silent=True) or request.form
     job_description = data.get("job_description", "")
@@ -1025,6 +1047,8 @@ def extract_job_criteria():
 
 
 @app.route("/analyze", methods=["POST"])
+@app.route("/api/analyze", methods=["POST"])
+@app.route("/api/index/analyze", methods=["POST"])
 def analyze_resume():
     """
     Unified Resume -> Job Description Fit Analysis.
