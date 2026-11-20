@@ -573,8 +573,33 @@ def normalize_text(text):
 
 
 # ============================================================
-# SAFE SKILL MATCHING
+# SAFE SKILL MATCHING WITH PRECOMPILED PATTERNS
 # ============================================================
+
+_COMPILED_SKILL_PATTERNS = {}
+
+
+def get_compiled_skill_pattern(skill: str):
+    """Return precompiled regex pattern for fast word boundary matching."""
+    skill_clean = skill.lower().strip()
+    if skill_clean not in _COMPILED_SKILL_PATTERNS:
+        if len(skill_clean) <= 2:
+            raw_regex = r"(?<![a-z0-9+#])" + re.escape(skill_clean) + r"(?![a-z0-9+#])"
+        else:
+            raw_regex = r"(?<![a-z0-9])" + re.escape(skill_clean) + r"(?![a-z0-9])"
+        _COMPILED_SKILL_PATTERNS[skill_clean] = re.compile(raw_regex, re.IGNORECASE)
+    return _COMPILED_SKILL_PATTERNS[skill_clean]
+
+
+# Precompile all known skills and role keywords at module load time
+for _cat, _skills in SKILLS_DB.items():
+    for _s in _skills:
+        get_compiled_skill_pattern(_s)
+
+for _r, _keywords in ROLE_KEYWORDS.items():
+    for _k in _keywords:
+        get_compiled_skill_pattern(_k)
+
 
 def skill_exists(text, skill):
     """
@@ -582,20 +607,13 @@ def skill_exists(text, skill):
 
     This prevents false matches such as detecting 'c'
     from ordinary words containing the letter c.
+    Uses precompiled regex for accelerated matching.
     """
-
-    skill = skill.lower().strip()
-
-    if not skill:
+    if not text or not skill:
         return False
 
-    # Special handling for very short skills.
-    if len(skill) <= 2:
-        pattern = r"(?<![a-z0-9+#])" + re.escape(skill) + r"(?![a-z0-9+#])"
-    else:
-        pattern = r"(?<![a-z0-9])" + re.escape(skill) + r"(?![a-z0-9])"
-
-    return re.search(pattern, text) is not None
+    pattern = get_compiled_skill_pattern(skill)
+    return pattern.search(text) is not None
 
 
 # ============================================================

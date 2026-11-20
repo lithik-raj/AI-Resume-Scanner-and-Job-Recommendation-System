@@ -4,6 +4,8 @@ numpy
 scikit-learn
 nltk
 pymysql
+pypdf
+pypdfium2
 pdfplumber
 joblib
 requests
